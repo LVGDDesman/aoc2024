@@ -27,7 +27,7 @@ func main() {
 	result2 := 0
 	for scanner.Scan() {
 		split := strings.Split(scanner.Text(), " ")
-		//result1 += isSafe(split)
+		result1 += isSafe(split)
 		result2 += isDampenedSafe(split, false)
 
 		if err != nil {

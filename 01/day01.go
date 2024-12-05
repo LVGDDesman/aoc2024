@@ -43,10 +43,10 @@ func main() {
 	sort.Slice(right, func(i, j int) bool {
 		return right[i] > right[j]
 	})
-	// result := countDifferences(left, right)
-	// fmt.Printf("Difference: %v\n", result)
-	result := similarity(left, right)
-	fmt.Printf("Similarity: %v\n", result)
+	result1 := countDifferences(left, right)
+	fmt.Printf("Difference: %v\n", result1)
+	//result2 := similarity(left, right)
+	//fmt.Printf("Similarity: %v\n", result2)
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
