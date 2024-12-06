@@ -4,25 +4,49 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strings"
 	"time"
 )
 
 func main() {
-	f, err := os.ReadFile("task.txt")
-	//f, err := os.ReadFile("test.txt")
+	inputraw, err := os.ReadFile("task.txt")
+	//inputraw, err := os.ReadFile("test.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
-	input := strings.Split(string(f), "\n")
+	input := [][]byte{}
+	length := 0
+	input = append(input, []byte{})
+	for _, char := range inputraw {
+		if char == '\n' {
+			length++
+			input = append(input, []byte{})
+		} else {
+			input[length] = append(input[length], byte(char))
+		}
+	}
 
-	cpy1 := make([]string, len(input))
-	copy(cpy1, input)
+	cpy1 := deepcopy(input)
 	findTiles(cpy1)
 
-	cpy2 := make([]string, len(input))
-	copy(cpy2, input)
+	cpy2 := deepcopy(input)
 	countObstructions(cpy2)
+}
+
+func printField(input [][]byte) {
+	for x := range input {
+		for y := range input[x] {
+			fmt.Printf("%v", string(input[x][y]))
+		}
+		fmt.Printf("\n")
+	}
+}
+func deepcopy(input [][]byte) [][]byte {
+	cpy1 := make([][]byte, len(input))
+	for i, row := range input {
+		cpy1[i] = make([]byte, len(row))
+		copy(cpy1[i], row)
+	}
+	return cpy1
 }
 
 func timerHighRes(name string) func() {
@@ -36,17 +60,17 @@ func timerHighRes(name string) func() {
 			float64(elapsed.Nanoseconds())/1_000_000.0)
 	}
 }
-func findStart(input []string) (int, int) {
+func findStart(input [][]byte) (int, int) {
 	for x := range input {
 		line := input[x]
 		for y := range len(line) {
 			if line[y] == '^' {
-				//fmt.Printf("%v %v\n", x, y)
+				//fmt.Printf("Start: %v %v\n", x, y)
 				return x, y
 			}
 		}
 	}
-	fmt.Printf("%v %v\n", 0, 0)
+	fmt.Printf("HALLO %v %v\n", 0, 0)
 	return 0, 0
 }
 
@@ -54,14 +78,13 @@ type dirs struct {
 	dx, dy int
 }
 
-func isObstructed(input []string) bool {
-	directions := []dirs{{-1, 0}, {0, 1}, {1, 0}, {0, -1}}
+func isObstructed(input [][]byte, x int, y int, directions []dirs, count *int) {
 	dir := 0
-	x, y := findStart(input)
+	//fmt.Printf("%v, %v\n", x, y)
 	for true {
 		nx, ny := x+directions[dir].dx, y+directions[dir].dy
 		if nx < 0 || nx >= len(input) || ny < 0 || ny >= len(input[nx]) {
-			return false
+			return
 		}
 		char := input[nx][ny]
 		//fmt.Printf("char: %v (%v,%v)", string(char), nx, ny)
@@ -69,52 +92,41 @@ func isObstructed(input []string) bool {
 		case '#':
 			dir = (dir + 1) % 4
 		case '.':
-			out := []rune(input[nx])
-			out[ny] = 1 << (dir)
-			input[nx] = string(out)
 			x, y = nx, ny
+			input[nx][ny] = 1 << dir
 		case '^':
-			out := []rune(input[nx])
-			out[ny] = 1 << (dir)
-			input[nx] = string(out)
 			x, y = nx, ny
+			input[nx][ny] = 1 << dir
 		default:
 			//fmt.Printf("(%d & %d -> %d) == %d -> %v\n", int(char), 1<<dir, int(char)&(1<<(dir)), 1<<(dir), (int(char)&(1<<(dir))) == 1<<(dir))
 
 			if (int(char) & (1 << (dir))) == 1<<(dir) {
-				return true
+				*count++
+				return
 			}
-			newchar := rune((char | (1 << (dir))))
+			newchar := char | (1 << dir)
 			//fmt.Printf("%v -> %v\n", char, newchar)
-			out := []rune(input[nx])
-			out[ny] = newchar
-			input[nx] = string(out)
+			input[nx][ny] = newchar
 			x, y = nx, ny
 		}
 	}
-	return false
+	return
 }
 
-func countObstructions(input []string) {
+func countObstructions(input [][]byte) {
 	defer timerHighRes("Day 6 Part 2 countObstructions")()
+
+	directions := []dirs{{-1, 0}, {0, 1}, {1, 0}, {0, -1}}
+	sx, sy := findStart(input)
 	count := 0
-	cpy1 := make([]string, len(input))
-	copy(cpy1, input)
-	if isObstructed(cpy1) {
-		count += 1
-	}
+	go isObstructed(deepcopy(input), sx, sy, directions, &count)
 	for x := range input {
 		line := input[x]
 		for y := range len(line) {
 			if line[y] == '.' {
-				cpy := make([]string, len(input))
-				copy(cpy, input)
-				out := []rune(cpy[x])
-				out[y] = '#'
-				cpy[x] = string(out)
-				if isObstructed(cpy) {
-					count += 1
-				}
+				cpy1 := deepcopy(input)
+				cpy1[x][y] = '#'
+				isObstructed(cpy1, sx, sy, directions, &count)
 			}
 		}
 	}
@@ -122,7 +134,7 @@ func countObstructions(input []string) {
 
 }
 
-func findTiles(input []string) {
+func findTiles(input [][]byte) {
 	defer timerHighRes("Day 6 Part 1 fildTiles")()
 	x, y := findStart(input)
 	directions := []dirs{{-1, 0}, {0, 1}, {1, 0}, {0, -1}}
@@ -141,9 +153,7 @@ func findTiles(input []string) {
 		case '#':
 			dir = (dir + 1) % 4
 		case '.':
-			out := []rune(input[nx])
-			out[ny] = 'X'
-			input[nx] = string(out)
+			input[nx][ny] = 'X'
 			x, y = nx, ny
 			count++
 		case 'X':
