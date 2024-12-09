@@ -81,7 +81,7 @@ type dirs struct {
 func isObstructed(input [][]byte, x int, y int, directions []dirs, count *int) {
 	dir := 0
 	//fmt.Printf("%v, %v\n", x, y)
-	for true {
+	for {
 		nx, ny := x+directions[dir].dx, y+directions[dir].dy
 		if nx < 0 || nx >= len(input) || ny < 0 || ny >= len(input[nx]) {
 			return
@@ -110,7 +110,6 @@ func isObstructed(input [][]byte, x int, y int, directions []dirs, count *int) {
 			x, y = nx, ny
 		}
 	}
-	return
 }
 
 func countObstructions(input [][]byte) {
@@ -119,7 +118,7 @@ func countObstructions(input [][]byte) {
 	directions := []dirs{{-1, 0}, {0, 1}, {1, 0}, {0, -1}}
 	sx, sy := findStart(input)
 	count := 0
-	go isObstructed(deepcopy(input), sx, sy, directions, &count)
+	isObstructed(deepcopy(input), sx, sy, directions, &count)
 	for x := range input {
 		line := input[x]
 		for y := range len(line) {
@@ -141,7 +140,7 @@ func findTiles(input [][]byte) {
 	dir := 0
 	//fmt.Printf("Dimensions: %v, %v\n", len(input), len(input[0]))
 	count := 1
-	for true {
+	for {
 		nx, ny := x+directions[dir].dx, y+directions[dir].dy
 		if nx < 0 || nx >= len(input) || ny < 0 || ny >= len(input[nx]) {
 			fmt.Printf("Count: %v\n", count)
@@ -163,5 +162,4 @@ func findTiles(input [][]byte) {
 		}
 		//fmt.Printf("\n")
 	}
-	fmt.Printf("Count: %v\n", count)
 }
