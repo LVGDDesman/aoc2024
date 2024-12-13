@@ -66,7 +66,7 @@ func findAntennas(input [][]byte) []antenna {
 	for x := range input {
 		for y := range len(input[0]) {
 			if input[x][y] != '.' {
-				ants = append(ants, antenna{x,y,input[x][y]})
+				ants = append(ants, antenna{x, y, input[x][y]})
 			}
 		}
 	}
@@ -74,8 +74,8 @@ func findAntennas(input [][]byte) []antenna {
 }
 
 type antenna struct {
-	x int
-	y int
+	x     int
+	y     int
 	atype byte
 }
 type vector struct {
@@ -90,8 +90,8 @@ func findAntinodes(input [][]byte) {
 	ydim := len(input[0])
 	ants := findAntennas(input)
 	count := 0
-	
-	for i,ant := range ants {
+
+	for i, ant := range ants {
 		for _, candidate := range ants[i+1:] {
 			if ant.atype != candidate.atype {
 				continue
@@ -104,7 +104,7 @@ func findAntinodes(input [][]byte) {
 			} else {
 				if input[antatde.x][antatde.y] != '#' {
 					input[antatde.x][antatde.y] = '#'
-					count +=1
+					count += 1
 				}
 			}
 			candatde := vector{candidate.x + dx, candidate.y + dy}
@@ -112,7 +112,7 @@ func findAntinodes(input [][]byte) {
 			} else {
 				if input[candatde.x][candatde.y] != '#' {
 					input[candatde.x][candatde.y] = '#'
-					count +=1
+					count += 1
 				}
 			}
 		}
@@ -128,8 +128,8 @@ func findAntinodesExt(input [][]byte) {
 	ydim := len(input[0])
 	ants := findAntennas(input)
 	count := len(ants)
-	
-	for i,ant := range ants {
+
+	for i, ant := range ants {
 		for _, candidate := range ants[i+1:] {
 			if ant.atype != candidate.atype {
 				continue
@@ -138,26 +138,26 @@ func findAntinodesExt(input [][]byte) {
 			dy := candidate.y - ant.y
 			r := 1
 			for {
-				antatde := vector{ant.x - dx * r, ant.y - dy * r}
+				antatde := vector{ant.x - dx*r, ant.y - dy*r}
 				if antatde.x < 0 || antatde.y < 0 || antatde.x >= xdim || antatde.y >= ydim {
 					break
 				} else {
 					if input[antatde.x][antatde.y] == '.' {
 						input[antatde.x][antatde.y] = '#'
-						count +=1
+						count += 1
 					}
 				}
 				r++
-			} 
+			}
 			r = 1
 			for {
-				candatde := vector{candidate.x + dx * r, candidate.y + dy * r}
+				candatde := vector{candidate.x + dx*r, candidate.y + dy*r}
 				if candatde.x < 0 || candatde.y < 0 || candatde.x >= xdim || candatde.y >= ydim {
 					break
 				} else {
 					if input[candatde.x][candatde.y] == '.' {
 						input[candatde.x][candatde.y] = '#'
-						count +=1
+						count += 1
 					}
 				}
 				r++
@@ -167,4 +167,3 @@ func findAntinodesExt(input [][]byte) {
 	fmt.Printf("Count: %v\n", count)
 
 }
-

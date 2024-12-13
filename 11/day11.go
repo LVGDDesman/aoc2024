@@ -101,7 +101,7 @@ func evolveMoreStones(input map[int]int, evolutions int, task string) {
 func evolveStonesSlow(input []int, evolutions int) {
 	defer timerHighRes("Day 11 Part 1 evolveStones")()
 
-	for range evolutions {
+	for i := range evolutions {
 		for i, v := range input {
 			if v == 0 {
 				input[i] = 1
@@ -128,6 +128,7 @@ func evolveStonesSlow(input []int, evolutions int) {
 				}
 			}
 		}
+		fmt.Printf("%v\n", i)
 		//fmt.Printf("%v\n", input)
 	}
 	fmt.Printf("Count: %v\n", len(input))
