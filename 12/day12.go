@@ -80,51 +80,14 @@ func findBulkPrice(input [][]byte) {
 			break
 		}
 		area, sides := getAreaAndSides(input, x, y, visited, make(map[int]map[int]byte))
-		fmt.Printf("Starting at %v %v with type %v ", x, y, string(input[x][y]))
-		fmt.Printf("%v %v (%v)\n", area, sides, area*sides)
+		// fmt.Printf("Starting at %v %v with type %v ", x, y, string(input[x][y]))
+		// fmt.Printf("%v %v (%v)\n", area, sides, area*sides)
 
 		count += area * sides
 
 	}
 	fmt.Printf("Count: %v\n", count)
 }
-
-// func getSides(input [][]byte, x int, y int, direction int, lastSides int, sx int, sy int) int {
-// 	sides := 0
-// 	if lastSides != -1 {
-// 		sides = -1
-// 	}
-// 	ptype := input[x][y]
-// 	//fmt.Printf("Testing %v %v\n", x, y)
-// 	directions := []dirs{{-1, 0}, {0, 1}, {1, 0}, {0, -1}}
-// 	for i := range directions {
-// 		newdirection := (i + direction + 3) % 4
-// 		dir := directions[newdirection]
-// 		nx := x + dir.dx
-// 		ny := y + dir.dy
-// 		if nx == sx && ny == sy {
-// 			return sides
-// 		}
-// 		if nx < 0 || nx >= len(input) || ny < 0 || ny >= len(input[nx]) || input[nx][ny] != ptype {
-// 			if sides != -1 {
-// 				//fmt.Printf("Sides %v + 1 at %v %v (from %v %v)\n", sides, nx, ny, x, y)
-// 			}
-// 			sides += 1
-// 		} else {
-// 			if input[nx][ny] == ptype {
-// 				if sides >= 0 {
-// 					fmt.Printf("%v %v has %v new sides -> going on \n", x, y, sides)
-// 					return sides + getSides(input, nx, ny, newdirection, sides, sx, sy)
-// 				} else {
-// 					fmt.Printf("huh %v %v %v\n", x, y, sides)
-// 				}
-// 				return getSides(input, nx, ny, newdirection, sides, sx, sy)
-// 			}
-// 		}
-
-// 	}
-// 	return sides
-// }
 
 func getAreaAndSides(input [][]byte, x int, y int, visited map[int]map[int]bool, sides map[int]map[int]byte) (int, int) {
 	area := 1
@@ -150,13 +113,13 @@ func getAreaAndSides(input [][]byte, x int, y int, visited map[int]map[int]bool,
 			next := directions[(i+3)%4]
 			if sides[nx+1+prev.dx] == nil || (sides[nx+1+prev.dx][ny+1+prev.dy])&(2<<i) == 0 {
 				if sides[nx+1+next.dx] == nil || (sides[nx+1+next.dx][ny+1+next.dy])&(2<<i) == 0 {
-					fmt.Printf("    %v %v new Side Found: %v, %v, (tested(%v, %v : %v) and (%v, %v: %v)) == %v \n", x, y, nx, ny, nx+prev.dx, ny+prev.dy, sides[nx+1+prev.dx][ny+1+prev.dy], nx+next.dx, ny+next.dy, sides[nx+1+next.dx][ny+1+next.dy], 2<<i)
+					//fmt.Printf("    %v %v new Side Found: %v, %v, (tested(%v, %v : %v) and (%v, %v: %v)) == %v \n", x, y, nx, ny, nx+prev.dx, ny+prev.dy, sides[nx+1+prev.dx][ny+1+prev.dy], nx+next.dx, ny+next.dy, sides[nx+1+next.dx][ny+1+next.dy], 2<<i)
 					csides += 1
 				}
 			}
 			if sides[nx+1+prev.dx] != nil && sides[nx+1+next.dx] != nil && sides[nx+1+prev.dx][ny+1+prev.dy]&(2<<i) == 2<<i && sides[nx+1+next.dx][ny+1+next.dy]&(2<<i) == 2<<i {
 				//correction if something like x _ x in sides happens
-				fmt.Printf("Correcting at %v, %v", x, y)
+				//fmt.Printf("Correcting at %v, %v", x, y)
 				csides -= 1
 			}
 		} else {
